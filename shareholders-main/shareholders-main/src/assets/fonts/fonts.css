@@ -1,0 +1,36 @@
+/* GE SS (Ges) Font Family Definitions */
+
+@font-face {
+  font-family: 'ges';
+  src: url('./GE-SS-Two-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ges';
+  src: url('./GE-SS-Text-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ges';
+  src: url('./GE-SS-Two-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ges';
+  src: url('./GE-SS-Two-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Fix for Western Arabic Numerals (0-9) - maps them to a system font instead of 'ges' Arabic-Indic glyphs */
+@font-face {
+  font-family: 'ges-numbers';
+  src: local('-apple-system'), local('BlinkMacSystemFont'), local('Segoe UI'), local('Roboto'), local('Helvetica Neue'), sans-serif;
+  unicode-range: U+0030-0039;
+}

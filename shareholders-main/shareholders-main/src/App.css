@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: 148 31% 44%;
+    /* #4e946f */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 279 26% 42%;
+    /* #745088 */
+    --secondary-foreground: 0 0% 100%;
+    --ring: 148 31% 44%;
+
+    /* Dark mode colors */
+    --background-dark: 222 47% 11%;
+    --foreground-dark: 210 40% 98%;
+
+    /* Font Families - Based on Admin Dashboard Strategy */
+    --font-arabic: 'ges-numbers', 'ges', 'Plus Jakarta Sans', 'Noto Sans Arabic', 'Tajawal', system-ui, -apple-system, sans-serif;
+    --font-english: 'ges-numbers', 'Plus Jakarta Sans', 'ges', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Dark mode support */
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --card: 217 33% 17%;
+    --card-foreground: 210 40% 98%;
+    --popover: 217 33% 17%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 148 31% 54%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 279 26% 52%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 63% 50%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 25%;
+    --input: 217 33% 17%;
+    --ring: 148 31% 54%;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+input,
+button,
+textarea,
+select {
+  font-family: inherit;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: var(--font-arabic); /* Default to Arabic */
+}
+
+[dir="ltr"],
+html[lang="en"] body {
+  font-family: var(--font-english);
+}
+
+[dir="rtl"],
+html[lang="ar"] body {
+  font-family: var(--font-arabic);
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* =============================================
+   Arabic Font Support
+   ============================================= */
+/* Handled in base styles above */
+
+/* =============================================
+   Language Switcher
+   ============================================= */
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  justify-content: center;
+}
+
+.lang-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.lang-btn:hover {
+  color: #1e293b;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.lang-btn--active {
+  color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.1);
+}
+
+.lang-divider {
+  color: #cbd5e1;
+  font-size: 0.8rem;
+  user-select: none;
+}
+
+/* =============================================
+   RTL Logical Property Helpers
+   (Most layout uses Tailwind rtl: variants)
+   ============================================= */
+/* OTP boxes use .otp-box (LTR digits + centered); exclude from global RTL input alignment */
+[dir="rtl"] input:not(.otp-box),
+[dir="rtl"] textarea,
+[dir="rtl"] select {
+  text-align: right;
+}
+
+/* Fix Tailwind space-x utilities direction in RTL */
+[dir="rtl"] .space-x-3 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+[dir="rtl"] .space-x-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+[dir="rtl"] .space-x-6 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+/* OTP: keep left-to-right box order in Arabic (same as English); Login.css sets direction: ltr */
+
+/* Login form text alignment */
+[dir="rtl"] .login-card {
+  text-align: right;
+}
+
+[dir="rtl"] .form-label {
+  display: block;
+  text-align: right;
+}
+
+/* Sidebar navigation: space between selector bar and item icon */
+.sidebar-active-pill {
+  inset-inline-start: 0.375rem;
+  box-shadow: 2px 0 12px rgba(116, 80, 136, 0.6);
+}
+
+[dir="rtl"] .sidebar-active-pill {
+  box-shadow: -2px 0 12px rgba(116, 80, 136, 0.6);
+}
+
+.sidebar-nav-item:has(.sidebar-active-pill) .sidebar-nav-item-icon {
+  margin-inline-start: 0.375rem;
+}
+
+/* Fix Recharts tooltip in RTL */
+[dir="rtl"] .recharts-tooltip-wrapper {
+  direction: ltr;
+}
+
+/* RTL pagination */
+[dir="rtl"] .pagination-controls {
+  flex-direction: row-reverse;
+}

@@ -1,0 +1,545 @@
+/* =============================================
+   Admin Panel - App Layout (Sidebar Style)
+   Matches the Shareholder Portal design
+   ============================================= */
+
+/* Remove any old Tailwind artifacts in this file */
+.admin-nav, .nav-header, .nav-links, .nav-actions, .logout-btn {
+  display: none !important;
+}
+
+/* ---- Root Layout ---- */
+.admin-app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  font-family: 'ges-numbers', 'ges', sans-serif;
+}
+
+/* ---- Background Decorative Blobs ---- */
+.admin-blob-1,
+.admin-blob-2,
+.admin-blob-3 {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(120px);
+}
+
+.admin-blob-1 {
+  top: -20%;
+  left: -10%;
+  width: 50%;
+  height: 50%;
+  background: rgba(78, 148, 111, 0.07);
+}
+
+.admin-blob-2 {
+  bottom: -20%;
+  right: -10%;
+  width: 50%;
+  height: 50%;
+  background: rgba(116, 80, 136, 0.07);
+}
+
+.admin-blob-3 {
+  top: 40%;
+  right: -5%;
+  width: 30%;
+  height: 30%;
+  background: rgba(78, 148, 111, 0.07);
+  filter: blur(100px);
+}
+
+/* ---- Mobile Header ---- */
+.admin-mobile-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: white;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+  position: relative;
+  z-index: 30;
+}
+
+.admin-mobile-header-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-mobile-header-logo img {
+  height: 2rem;
+  object-fit: contain;
+}
+
+.admin-mobile-header-logo span {
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.admin-mobile-menu-btn {
+  background: transparent;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  color: #475569;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-mobile-menu-btn:hover {
+  background: #f1f5f9;
+}
+
+/* ---- Sidebar Backdrop (mobile) ---- */
+.admin-sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 40;
+}
+
+.admin-sidebar-backdrop.visible {
+  display: block;
+}
+
+/* ---- Sidebar ---- */
+.admin-sidebar {
+  position: relative;
+  width: 17rem;           /* w-72 = 288px ≈ 18rem, keeping 17 is fine */
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(226, 232, 240, 0.6);
+  box-shadow: 4px 0 24px -12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  /* Below main so portaled dialogs (body) and main-area overlays can dim the shell */
+  z-index: 1;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* ---- Sidebar Header (logo area) ---- */
+.admin-sidebar-logo {
+  padding: 1.5rem 1rem;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.admin-sidebar-logo img {
+  height: 4.5rem;
+  object-fit: contain;
+}
+
+.admin-sidebar-logo-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.admin-sidebar-logo-subtitle {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin: 0;
+}
+
+/* ---- Mobile Close Button ---- */
+.admin-sidebar-close {
+  display: none;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  color: #475569;
+  transition: background 0.2s;
+}
+
+.admin-sidebar-close:hover {
+  background: #f1f5f9;
+}
+
+/* ---- Navigation ---- */
+.admin-sidebar-nav {
+  flex: 1;
+  padding: 1rem 0.75rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding-block: 0.75rem;
+  padding-inline-end: 1rem;
+  padding-inline-start: 1.375rem;
+  border-radius: 0.75rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #64748b;
+  transition: background 0.15s, color 0.15s;
+}
+
+.admin-nav-item:hover {
+  background: rgba(241, 245, 249, 0.8);
+  color: #1e293b;
+}
+
+.admin-nav-item.active {
+  background: rgba(116, 80, 136, 0.06);
+  color: var(--secondary);
+  font-weight: 700;
+}
+
+.admin-nav-item.active .admin-nav-item-icon {
+  margin-inline-start: 0.375rem;
+}
+
+.admin-nav-item-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.admin-nav-item-label {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+/* Active border pill (inset from sidebar edge for spacing before item icon) */
+.admin-nav-item.active::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0.375rem;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 4px;
+  background: var(--secondary);
+  border-radius: 0 4px 4px 0;
+  box-shadow: 2px 0 12px rgba(116, 80, 136, 0.5);
+}
+
+/* ---- Sidebar Footer (logout) ---- */
+.admin-sidebar-footer {
+  padding: 1rem 0.75rem;
+  border-top: 1px solid rgba(226, 232, 240, 0.6);
+  background: rgba(248, 250, 252, 0.5);
+}
+
+.admin-logout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--error);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.admin-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.05);
+  border-color: rgba(239, 68, 68, 0.15);
+}
+
+.admin-logout-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.admin-account-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--slate-600);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.admin-account-btn:hover {
+  background: rgba(100, 116, 139, 0.08);
+  border-color: rgba(100, 116, 139, 0.15);
+}
+
+.admin-account-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+/* ---- Main Content ---- */
+.admin-main-content {
+  flex: 1;
+  position: relative;
+  z-index: 2;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.admin-main-inner {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  width: 100%;
+}
+
+.admin-main-views {
+  flex: 1;
+}
+
+.admin-site-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-top: 2.5rem;
+  padding-bottom: 0.5rem;
+  border-top: 1px solid var(--slate-200, #e2e8f0);
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--slate-500, #64748b);
+}
+
+.admin-site-footer p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Dialogs rendered via AdminDialogPortal on document.body — above mobile sidebar (z-index 50) */
+.admin-dialog-overlay {
+  z-index: 10050;
+}
+
+/* =============================================
+   Language Switcher
+   ============================================= */
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.lang-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #64748b;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.lang-btn:hover {
+  color: #1e293b;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.lang-btn--active {
+  color: var(--primary);
+  background: rgba(78, 148, 111, 0.1);
+}
+
+.lang-divider {
+  color: #cbd5e1;
+  font-size: 0.8rem;
+  user-select: none;
+}
+
+/* =============================================
+   RTL Support - Sidebar flip to right
+   ============================================= */
+[dir="rtl"] .admin-sidebar {
+  border-right: none;
+  border-left: 1px solid rgba(226, 232, 240, 0.6);
+  box-shadow: -4px 0 24px -12px rgba(0, 0, 0, 0.1);
+}
+
+/* RTL: pill mirrors to inline-end; round shadow toward content */
+[dir="rtl"] .admin-nav-item.active::before {
+  border-radius: 4px 0 0 4px;
+  box-shadow: -2px 0 12px rgba(116, 80, 136, 0.5);
+}
+
+/* Nav item text alignment */
+[dir="rtl"] .admin-nav-item {
+  text-align: right;
+}
+
+/* RTL Arabic font */
+[dir="rtl"] {
+  font-family: 'ges-numbers', 'ges', sans-serif;
+}
+
+/* Fix sidebar close button for RTL */
+[dir="rtl"] .admin-sidebar-close {
+  right: auto;
+  left: 1rem;
+}
+
+/* Fix blob positions for RTL */
+[dir="rtl"] .admin-blob-1 {
+  left: auto;
+  right: -10%;
+}
+
+[dir="rtl"] .admin-blob-2 {
+  right: auto;
+  left: -10%;
+}
+
+[dir="rtl"] .admin-blob-3 {
+  right: auto;
+  left: -5%;
+}
+
+/* Input text alignment in RTL */
+[dir="rtl"] input,
+[dir="rtl"] textarea,
+[dir="rtl"] select {
+  text-align: right;
+}
+
+/* Fix table alignment in RTL */
+[dir="rtl"] table {
+  text-align: right;
+}
+
+[dir="rtl"] th,
+[dir="rtl"] td {
+  text-align: right;
+}
+
+/* Fix action buttons direction in RTL */
+[dir="rtl"] .action-buttons {
+  flex-direction: row-reverse;
+}
+
+/* Fix Recharts in RTL */
+[dir="rtl"] .recharts-wrapper {
+  direction: ltr;
+}
+
+/* Fix form section hints in RTL */
+[dir="rtl"] .form-section-hint {
+  text-align: right;
+}
+
+/* Fix filter bar in RTL */
+[dir="rtl"] .filter-bar {
+  flex-direction: row-reverse;
+}
+
+/* Submission card header in RTL */
+[dir="rtl"] .sub-header {
+  flex-direction: row-reverse;
+}
+
+/* Fix status buttons direction */
+[dir="rtl"] .status-buttons {
+  flex-direction: row-reverse;
+}
+
+/* ---- Responsive (Mobile) ---- */
+@media (max-width: 1023px) {
+  .admin-app {
+    flex-direction: column;
+  }
+
+  .admin-mobile-header {
+    display: flex;
+  }
+
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 50;
+    transform: translateX(-100%);
+  }
+
+  [dir="rtl"] .admin-sidebar {
+    left: auto;
+    right: 0;
+    transform: translateX(100%);
+  }
+
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+
+  [dir="rtl"] .admin-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .admin-sidebar-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .admin-main-content {
+    height: calc(100vh - 65px);
+  }
+
+  .admin-main-inner {
+    padding: 1rem;
+  }
+}

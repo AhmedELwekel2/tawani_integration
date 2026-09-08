@@ -1,0 +1,78 @@
+/* Session expiry warning dialog (mirrors the Change Password modal look). */
+.session-warning-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100; /* above every other admin dialog */
+  backdrop-filter: blur(2px);
+}
+
+.session-warning-modal {
+  background: var(--bg-card);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  padding: 1.75rem 2rem;
+  text-align: center;
+}
+
+.session-warning-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.15rem;
+  color: var(--slate-800);
+}
+
+.session-warning-body {
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--slate-600);
+}
+
+.session-warning-countdown {
+  margin: 0 0 1.5rem 0;
+  font-size: 2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--slate-800);
+}
+
+.session-warning-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.session-warning-btn-primary,
+.session-warning-btn-secondary {
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.session-warning-btn-primary {
+  background-color: var(--primary, #0f766e);
+  color: #fff;
+}
+
+.session-warning-btn-primary:hover {
+  filter: brightness(0.95);
+}
+
+.session-warning-btn-secondary {
+  background-color: transparent;
+  border-color: var(--slate-200);
+  color: var(--slate-600);
+}
+
+.session-warning-btn-secondary:hover {
+  background-color: var(--slate-100, rgba(0, 0, 0, 0.04));
+}

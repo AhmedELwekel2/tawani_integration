@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?project_ref=fyjtgjetqwqpqsisymql"
+    },
+    "analytics-mcp": {
+      "command": "C:\\Users\\Walid\\.local\\bin\\analytics-mcp.exe",
+      "args": [],
+      "env": {
+           "GOOGLE_APPLICATION_CREDENTIALS": "C:\\Users\\Walid\\keys\\wham-analytics-sa.json",
+        "GOOGLE_PROJECT_ID": "shareholder-3df3c"
+      }
+    }
+  }
+}

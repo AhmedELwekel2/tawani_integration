@@ -1,0 +1,453 @@
+/* ================================================================
+   AuditLog View — Admin Portal
+   Matches existing dark glassmorphism design system
+   ================================================================ */
+
+.audit-log-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 0 0 2rem;
+  min-height: 100%;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.audit-log-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.audit-log-header-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
+}
+
+.audit-log-header-icon svg {
+  width: 22px;
+  height: 22px;
+  stroke: #fff;
+}
+
+.audit-log-header-text h1 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.audit-log-header-text p {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin: 0.15rem 0 0;
+}
+
+/* ── Filters card ───────────────────────────────────────────── */
+.audit-filters-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.audit-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+  min-width: 160px;
+}
+
+.audit-filter-group label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.audit-filter-group input,
+.audit-filter-group select {
+  height: 36px;
+  padding: 0 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 0.83rem;
+  color: #0f172a;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.audit-filter-group input:focus,
+.audit-filter-group select:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+}
+
+.audit-filter-group input[type="date"] {
+  cursor: pointer;
+}
+
+.audit-filter-clear {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 0.85rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 10px;
+  background: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  align-self: flex-end;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.audit-filter-clear:hover {
+  background: #7c3aed;
+  color: #fff;
+  border-color: #7c3aed;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(124, 58, 237, 0.2);
+}
+
+.audit-filter-clear svg {
+  flex-shrink: 0;
+}
+
+/* ── Search UI — Audit specific ────────────────────────────── */
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.search-input-wrapper input {
+  width: 100%;
+  padding-inline-start: 2.5rem !important; /* Space for search icon */
+  padding-inline-end: 2.5rem !important;   /* Space for clear button */
+}
+
+.search-icon {
+  position: absolute;
+  inset-inline-start: 0.85rem;
+  color: #94a3b8;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.search-clear {
+  position: absolute;
+  inset-inline-end: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.25rem 0.4rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 2;
+}
+
+.search-clear:hover {
+  color: #7c3aed;
+  background: rgba(124, 58, 237, 0.1);
+}
+
+/* ── Table card ─────────────────────────────────────────────── */
+.audit-table-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.audit-table-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem 0.75rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.audit-table-meta-count {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.audit-table-meta-count strong {
+  color: #0f172a;
+}
+
+.audit-table-wrapper {
+  overflow-x: auto;
+}
+
+.audit-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.audit-table thead th {
+  padding: 0.85rem 1rem;
+  text-align: start;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+  background: rgba(241, 245, 249, 0.7);
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.audit-table tbody tr {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  transition: background 0.15s;
+}
+
+.audit-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.audit-table tbody tr:hover {
+  background: rgba(124, 58, 237, 0.03);
+}
+
+.audit-table tbody td {
+  padding: 0.85rem 1rem;
+  color: #0f172a;
+  vertical-align: top;
+  text-align: start;
+}
+
+.audit-table-time {
+  white-space: nowrap;
+  color: #475569;
+  font-size: 0.78rem;
+}
+
+.audit-actor-email {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #334155;
+  font-weight: 500;
+}
+
+.audit-action-badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.audit-action-container {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.15rem;
+}
+
+.audit-action-container span:first-child {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.audit-event-summary {
+  font-size: 0.76rem;
+  color: #64748b;
+  font-weight: 400;
+  line-height: 1.25;
+  padding-left: 0.1rem;
+}
+
+.audit-action-badge.create  { background: #dcfce7; color: #15803d; }
+.audit-action-badge.update  { background: #dbeafe; color: #1d4ed8; }
+.audit-action-badge.delete  { background: #fee2e2; color: #b91c1c; }
+.audit-action-badge.upload  { background: #fef9c3; color: #a16207; }
+.audit-action-badge.auth    { background: #f3e8ff; color: #7c3aed; }
+.audit-action-badge.other   { background: #f1f5f9; color: #475569; }
+
+.audit-entity-type {
+  font-size: 0.75rem;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.audit-target-id {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.72rem;
+  color: #64748b;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Details expand */
+.audit-details-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 6px;
+  background: transparent;
+  font-size: 0.72rem;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.audit-details-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.audit-details-expand-row td {
+  padding: 0 1rem 0.75rem;
+}
+
+.audit-details-json {
+  background: #0f172a;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.75rem;
+  color: #a5f3fc;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 0;
+  direction: ltr; /* Always LTR for code */
+  text-align: left;
+}
+
+/* ── Empty / loading states ─────────────────────────────────── */
+.audit-empty-state {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.audit-empty-state-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.audit-empty-state-icon svg {
+  width: 28px;
+  height: 28px;
+  stroke: #94a3b8;
+}
+
+.audit-empty-state h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #334155;
+  margin: 0 0 0.25rem;
+}
+
+.audit-empty-state p {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* ── Pagination ─────────────────────────────────────────────── */
+.audit-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.5rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.15);
+  background: rgba(241, 245, 249, 0.4);
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.audit-pagination-info {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.audit-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.audit-page-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 0.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 7px;
+  background: #fff;
+  font-size: 0.8rem;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.audit-page-btn:hover:not(:disabled) {
+  background: #7c3aed;
+  color: #fff;
+  border-color: #7c3aed;
+}
+
+.audit-page-btn.active {
+  background: #7c3aed;
+  color: #fff;
+  border-color: #7c3aed;
+  font-weight: 700;
+}
+
+.audit-page-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}

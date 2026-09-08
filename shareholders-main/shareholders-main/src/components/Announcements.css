@@ -1,0 +1,59 @@
+/* Rich-text body rendered from sanitized admin HTML (TipTap output). */
+.announcement-body {
+  line-height: 1.7;
+  word-break: break-word;
+}
+
+.announcement-body p {
+  margin: 0 0 0.75rem 0;
+}
+
+.announcement-body p:last-child {
+  margin-bottom: 0;
+}
+
+.announcement-body h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 1rem 0 0.5rem 0;
+  color: #1e293b;
+}
+
+.announcement-body h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0.875rem 0 0.5rem 0;
+  color: #1e293b;
+}
+
+.announcement-body ul,
+.announcement-body ol {
+  padding-inline-start: 1.5rem;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.announcement-body ul {
+  list-style: disc;
+}
+
+.announcement-body ol {
+  list-style: decimal;
+}
+
+.announcement-body li {
+  margin: 0.25rem 0;
+}
+
+.announcement-body a {
+  color: var(--color-primary, #2563eb);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.announcement-body strong {
+  font-weight: 700;
+}
+
+.announcement-body em {
+  font-style: italic;
+}

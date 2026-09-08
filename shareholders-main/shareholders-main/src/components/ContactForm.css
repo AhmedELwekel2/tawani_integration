@@ -1,0 +1,19 @@
+/* Styles for ContactForm */
+
+.contact-form-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Custom transitions and states if needed beyond Tailwind */
+input::placeholder, 
+textarea::placeholder {
+  color: #94a3b8;
+  opacity: 0.7;
+}
+
+input:focus, 
+textarea:focus {
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}

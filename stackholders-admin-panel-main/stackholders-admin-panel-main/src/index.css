@@ -1,0 +1,144 @@
+@font-face {
+  font-family: 'ges';
+  src: url('./assets/fonts/GE-SS-Two-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ges';
+  src: url('./assets/fonts/GE-SS-Two-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ges';
+  src: url('./assets/fonts/GE-SS-Text-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ges';
+  src: url('./assets/fonts/GE-SS-Two-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Fix for Western Arabic Numerals (0-9) - maps them to a system font instead of 'ges' Arabic-Indic glyphs */
+@font-face {
+  font-family: 'ges-numbers';
+  src: local('-apple-system'), local('BlinkMacSystemFont'), local('Segoe UI'), local('Roboto'), local('Helvetica Neue'), sans-serif;
+  unicode-range: U+0030-0039;
+}
+
+:root {
+  /* Brand Colors */
+  --primary: #4e946f;
+  --primary-dark: #417d5e;
+  --secondary: #745088;
+
+  /* Neutral Color Palette (Slate) */
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+
+  /* Functional Colors */
+  --success: #10b981;
+  --success-bg: #d1fae5;
+  --success-text: #065f46;
+
+  --error: #ef4444;
+  --error-bg: #fee2e2;
+  --error-text: #991b1b;
+
+  --warning: #f59e0b;
+  --warning-bg: #fef3c7;
+  --warning-text: #92400e;
+
+  --info: #3b82f6;
+  --info-bg: #dbeafe;
+  --info-text: #1d4ed8;
+
+  /* Indigo (used in Feedback stats) */
+  --indigo-500: #6366f1;
+  --indigo-600: #4f46e5;
+  --indigo-700: #4338ca;
+  --indigo-800: #3730a3;
+
+  /* Rating Colors */
+  --rating-star: #fbbf24;
+  --rating-star-empty: var(--slate-200);
+
+  /* Charts & Gradients */
+  --gradient-primary: linear-gradient(135deg, #4e946f, #417d5e);
+  --gradient-success: linear-gradient(135deg, #10b981, #059669);
+  --gradient-info: linear-gradient(135deg, #f59e0b, #d97706);
+  --gradient-warning: linear-gradient(135deg, #f97316, #ea580c);
+  --gradient-violet: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  --gradient-indigo: linear-gradient(135deg, var(--indigo-600), var(--indigo-800));
+
+  /* Badge Colors */
+  --badge-purchase-bg: #d1fae5;
+  --badge-purchase-text: #065f46;
+  --badge-sell-bg: #fee2e2;
+  --badge-sell-text: #991b1b;
+  --badge-warning-bg: #fef3c7;
+  --badge-warning-text: #92400e;
+  --badge-name-text: #5b21b6;
+  --badge-violet-bg: #8b5cf6;
+  --badge-violet-hover: #7c3aed;
+
+  /* Note/Alert Specialized Colors */
+  --note-blue-bg: #eff6ff;
+  --note-blue-text: #1e40af;
+  --note-blue-border: #745088;
+  /* Custom border color for notes */
+
+  /* Layout Colors */
+  --bg-app: var(--slate-50);
+  --bg-main: #f9fafb;
+  --bg-card: #ffffff;
+  --bg-input: #ffffff;
+  --text-main: var(--slate-800);
+  --text-muted: var(--slate-500);
+  --border-light: rgba(226, 232, 240, 0.6);
+  --border-medium: var(--slate-200);
+  --border-strong: var(--slate-300);
+
+  /* Utils */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --primary-shadow: rgba(78, 148, 111, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'ges-numbers', 'ges', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+}
+
+input, button, select, textarea {
+  font-family: 'ges-numbers', 'ges', sans-serif;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}

@@ -1,0 +1,145 @@
+/*
+ * Loading screen styles.
+ *
+ * This component was written against Tailwind utility classes, but Tailwind was
+ * never actually wired into the build (no PostCSS config, no Vite plugin, no
+ * @tailwind directive), so none of those classes ever produced any CSS and the
+ * screen rendered completely unstyled. Rewritten as plain CSS to match the rest
+ * of the codebase, which styles every component this way.
+ */
+
+.loading-screen {
+  min-height: 100vh;
+  background-color: var(--slate-50);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Soft ambient colour blobs behind the spinner. */
+.loading-blob {
+  position: absolute;
+  width: 60%;
+  height: 60%;
+  border-radius: 9999px;
+  filter: blur(120px);
+  pointer-events: none;
+}
+
+.loading-blob-1 {
+  top: -20%;
+  inset-inline-start: -10%;
+  background-color: color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+.loading-blob-2 {
+  bottom: -20%;
+  inset-inline-end: -10%;
+  background-color: color-mix(in srgb, var(--secondary) 10%, transparent);
+}
+
+.loading-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loading-spinner-wrap {
+  position: relative;
+}
+
+.loading-ring {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 9999px;
+  border-top: 2px solid color-mix(in srgb, var(--primary) 25%, transparent);
+  border-right: 2px solid color-mix(in srgb, var(--primary) 25%, transparent);
+  border-bottom: 2px solid transparent;
+  border-left: 2px solid transparent;
+}
+
+.loading-badge-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-badge {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1rem;
+  background: var(--bg-card, #fff);
+  border: 1px solid var(--slate-100);
+  box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-badge-icon {
+  width: 2rem;
+  height: 2rem;
+  color: var(--primary);
+}
+
+.loading-text {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.loading-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--slate-800);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.loading-subtitle-row {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.loading-subtitle {
+  color: var(--slate-400);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.loading-dots {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.loading-dot {
+  width: 0.25rem;
+  height: 0.25rem;
+  border-radius: 9999px;
+  background-color: color-mix(in srgb, var(--primary) 50%, transparent);
+}
+
+.loading-version {
+  position: absolute;
+  bottom: 3rem;
+  color: var(--slate-400);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-blob {
+    display: none;
+  }
+}

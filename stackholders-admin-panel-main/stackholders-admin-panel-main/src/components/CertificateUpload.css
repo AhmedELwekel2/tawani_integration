@@ -1,0 +1,222 @@
+.certificate-table-container {
+  background: var(--bg-card);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  border: 1px solid var(--slate-200);
+}
+
+.certificate-upload-card {
+  background: var(--bg-card);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.certificate-upload-card .card-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--slate-200);
+  background: var(--bg-main);
+  display: flex;
+  align-items: center; /* Changed from baseline for better alignment */
+  gap: 1rem;
+}
+
+.certificate-upload-card .card-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--slate-900);
+  line-height: 1.2;
+}
+
+[dir="rtl"] .certificate-upload-card .card-header .cert-subtitle {
+  margin-right: 0.5rem; /* Space between title and subtitle in RTL */
+}
+
+.cert-subtitle {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--slate-500);
+  display: inline-block;
+}
+
+.certificate-upload-card .card-body {
+  padding: 0;
+}
+
+/* Table */
+.cert-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.cert-table th {
+  background-color: var(--bg-main);
+  color: var(--slate-600);
+  font-weight: 600;
+  text-align: left;
+  padding: 1rem;
+  border-bottom: 2px solid var(--slate-200);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+[dir="rtl"] .cert-table th {
+  text-align: right;
+}
+
+.cert-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--slate-100);
+  color: var(--slate-700);
+  vertical-align: middle;
+}
+
+[dir="rtl"] .cert-table td {
+  text-align: right;
+}
+
+.cert-table tr:last-child td {
+  border-bottom: none;
+}
+
+.cert-column-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cert-file-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  display: inline-block;
+}
+
+.cert-file-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--primary);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+[dir="rtl"] .cert-file-link-btn {
+  text-align: right;
+}
+
+.cert-file-link:hover,
+.cert-file-link-btn:hover {
+  text-decoration: underline;
+}
+
+.cert-none {
+  color: var(--slate-500);
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+.cert-row-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-upload-sm {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-upload-sm:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+.btn-upload-sm:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-delete-sm {
+  background: var(--error-bg);
+  color: var(--error);
+  border: none;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-delete-sm:hover:not(:disabled) {
+  background: var(--error-bg-hover);
+}
+
+.btn-delete-sm:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.cert-error {
+  margin: 0.75rem 1.5rem;
+  padding: 0.75rem;
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
+  color: var(--error);
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.cert-loading,
+.cert-empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--slate-400);
+  font-style: italic;
+}
+
+/* Unlinked section styles */
+.cert-section-divider td {
+  background: var(--bg-main);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--slate-500);
+  letter-spacing: 0.05em;
+  padding: 0.75rem 1rem;
+  border-top: 2px solid var(--slate-200);
+}
+
+.cert-label-tag {
+  background: var(--slate-100);
+  color: var(--slate-500);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.cert-unlinked-row td {
+  background: #fffcf0; /* Subtle yellow to highlight unlinked status */
+}

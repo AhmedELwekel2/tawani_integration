@@ -1,0 +1,52 @@
+# Apache config for the admin panel (admin.jtgc.sa, Hostinger).
+# Lives in public/ so Vite copies it verbatim into dist/ on build.
+
+# ---------------------------------------------------------------------------
+# SPA routing: serve index.html for anything that isn't a real file/directory.
+# ---------------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Force HTTPS (HSTS below is only honoured over TLS anyway).
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# ---------------------------------------------------------------------------
+# Security headers
+# ---------------------------------------------------------------------------
+<IfModule mod_headers.c>
+  # The admin session token lives in localStorage, readable by any same-origin
+  # script, so restricting what script can run at all is the main mitigation.
+  #
+  # 'unsafe-inline' for style-src is required: the app ships hand-written CSS
+  # plus inline styles from framer-motion/recharts. Scripts do NOT get it.
+  # connect-src covers Supabase REST, Auth, Storage and Realtime (wss).
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://fyjtgjetqwqpqsisymql.supabase.co; font-src 'self' data:; connect-src 'self' https://fyjtgjetqwqpqsisymql.supabase.co wss://fyjtgjetqwqpqsisymql.supabase.co; frame-src 'self' blob: https://fyjtgjetqwqpqsisymql.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+
+  # Never let a proxy or browser cache an admin page.
+  <FilesMatch "\.(html)$">
+    Header always set Cache-Control "no-store, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+# Build metadata should not be publicly readable.
+<Files "stats.html">
+  Require all denied
+</Files>
+
+<FilesMatch "^\.env">
+  Require all denied
+</FilesMatch>
