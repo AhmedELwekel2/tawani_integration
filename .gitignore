@@ -1,0 +1,50 @@
+# Repo-root ignores for the three projects in this workspace.
+#
+# Each project carries its own .gitignore, but between them they leave two gaps
+# that matter here: neither React app ignores its plain `.env` (they only cover
+# `*.local`), and none of them know about the `.env.*` backups made while
+# switching between the test and production Supabase projects.
+
+# ---------------------------------------------------------------------------
+# Secrets -- every env file except the tracked examples
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# ---------------------------------------------------------------------------
+# Dependencies and build output (~950 MB combined)
+# ---------------------------------------------------------------------------
+node_modules/
+dist/
+build/
+.vite/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# ---------------------------------------------------------------------------
+# Agent runtime artifacts
+# ---------------------------------------------------------------------------
+# The report store and the PDFs it indexes are local state, not source.
+quality_bot/tawani.db
+quality_bot/tawani.db-wal
+quality_bot/tawani.db-shm
+quality_bot/generated/
+user_usage.json
+
+# ---------------------------------------------------------------------------
+# Editor / OS
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Supabase CLI local state
+supabase/.temp/
