@@ -26,17 +26,13 @@ create index if not exists subscribers_active_idx on public.subscribers (is_acti
 
 alter table public.subscribers enable row level security;
 
--- A signed-in subscriber may read only their own row, matched on the national ID
--- carried in the JWT. Mirrors `stockholders_select_own`.
+-- A signed-in subscriber may read only their own row. Uses the same
+-- `current_national_id()` helper every stockholder-facing policy uses, so the
+-- two directories resolve identity identically.
 drop policy if exists subscribers_select_own on public.subscribers;
 create policy subscribers_select_own on public.subscribers
   for select to authenticated
-  using (
-    national_id = coalesce(
-      auth.jwt() -> 'app_metadata' ->> 'national_id',
-      auth.jwt() -> 'user_metadata' ->> 'national_id'
-    )
-  );
+  using (national_id = public.current_national_id());
 
 -- Admins manage the directory. Editors deliberately get nothing here: they
 -- produce content and have no business reading the member list.

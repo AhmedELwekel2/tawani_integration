@@ -27,19 +27,26 @@ alter table public.subscribers enable row level security;
 drop policy if exists subscribers_select_own on public.subscribers;
 create policy subscribers_select_own on public.subscribers
   for select to authenticated
-  using (
-    national_id = coalesce(
-      auth.jwt() -> 'app_metadata' ->> 'national_id',
-      auth.jwt() -> 'user_metadata' ->> 'national_id'
-    )
-  );
+  using (national_id = public.current_national_id());
 
--- Dev-only: no portal-admin gate available here.
+-- Dev-only write access, for the case where this file is run before
+-- 04_admin_access.sql has created `is_portal_admin()`.
+--
+-- Split across the three write commands ON PURPOSE. A single `FOR ALL USING
+-- (true)` also covers SELECT, and because RLS policies are OR-ed that would
+-- override `subscribers_select_own` and let any signed-in subscriber read the
+-- whole directory. Reads stay governed by the two SELECT policies alone.
 drop policy if exists subscribers_dev_write on public.subscribers;
-create policy subscribers_dev_write on public.subscribers
-  for all to authenticated
-  using (true)
-  with check (true);
+drop policy if exists subscribers_dev_insert on public.subscribers;
+drop policy if exists subscribers_dev_update on public.subscribers;
+drop policy if exists subscribers_dev_delete on public.subscribers;
+
+create policy subscribers_dev_insert on public.subscribers
+  for insert to authenticated with check (true);
+create policy subscribers_dev_update on public.subscribers
+  for update to authenticated using (true) with check (true);
+create policy subscribers_dev_delete on public.subscribers
+  for delete to authenticated using (true);
 
 grant select, insert, update, delete on public.subscribers to authenticated;
 
