@@ -72,24 +72,42 @@ curl -sI http://127.0.0.1:3060 | head -1
 curl -sI http://127.0.0.1:3061 | head -1
 ```
 
-### 4. nginx
+### 4. Certificate (before the real vhosts)
+
+The real vhosts reference certificate files, and nginx refuses to load a config
+pointing at files that do not exist — so `nginx -t` would fail and nothing would
+reload. Install the bootstrap vhost first; it answers only the ACME challenge.
 
 ```bash
-cp deploy/nginx/tawani-portal.conf /etc/nginx/sites-available/
-cp deploy/nginx/tawani-admin.conf  /etc/nginx/sites-available/
-# set the real hostnames in both
-ln -s /etc/nginx/sites-available/tawani-portal.conf /etc/nginx/sites-enabled/
-ln -s /etc/nginx/sites-available/tawani-admin.conf  /etc/nginx/sites-enabled/
+cp deploy/nginx/tawani-bootstrap.conf /etc/nginx/sites-available/
+ln -s /etc/nginx/sites-available/tawani-bootstrap.conf /etc/nginx/sites-enabled/
 nginx -t && systemctl reload nginx
 ```
 
-### 5. Certificates
-
-DNS must already point at the VPS.
+Then issue the certificates with `certonly --webroot`, **not** `--nginx`.
+`--nginx` rewrites vhost files; `certonly` only writes certificates and never
+edits nginx, which is what keeps the other twelve sites on this box out of harm's
+way.
 
 ```bash
-certbot --nginx -d investors.example.com -d admin.example.com
+certbot certonly --webroot -w /var/www/certbot   -d jtgcsa.thetransformix.com   -d admin.jtgcsa.thetransformix.com
 ```
+
+### 5. The real vhosts
+
+Hostnames are already set in both files — no editing needed.
+
+```bash
+rm /etc/nginx/sites-enabled/tawani-bootstrap.conf
+cp deploy/nginx/tawani-portal.conf /etc/nginx/sites-available/
+cp deploy/nginx/tawani-admin.conf  /etc/nginx/sites-available/
+ln -s /etc/nginx/sites-available/tawani-portal.conf /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/tawani-admin.conf  /etc/nginx/sites-enabled/
+nginx -t && systemctl reload nginx     # reload ONLY if -t passes
+```
+
+`nginx -t` is the safety catch: a bad config fails the test, nothing reloads, and
+every existing site keeps serving.
 
 ### 6. Redeploying later
 
