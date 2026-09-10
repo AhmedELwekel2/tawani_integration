@@ -43,4 +43,11 @@ WORKDIR /app/quality_bot
 EXPOSE 8010
 
 # Serve the FastAPI app. (To run the Telegram bot instead: python -m agent.bot)
-CMD ["python", "-m", "uvicorn", "agent.api:app", "--host", "0.0.0.0", "--port", "8010"]
+#
+# --proxy-headers makes uvicorn honour X-Forwarded-Proto/-For from the reverse
+# proxy, so request.base_url reports https and the download_url in a report
+# response is not built as http://. --forwarded-allow-ips is required alongside
+# it: uvicorn ignores those headers unless the immediate peer is trusted, and
+# behind Docker the peer is the bridge gateway, whose address is not fixed.
+# Safe here only because nothing reaches this container except the host's nginx.
+CMD ["python", "-m", "uvicorn", "agent.api:app", "--host", "0.0.0.0", "--port", "8010", "--proxy-headers", "--forwarded-allow-ips", "*"]
