@@ -95,6 +95,13 @@ certbot certonly --webroot -w /var/www/certbot   -d jtgcsa.thetransformix.com   
 
 ### 5. The real vhosts
 
+> One certbot run with two `-d` flags issues a **single SAN certificate**, saved
+> under the first domain's name. Both vhosts therefore reference
+> `/etc/letsencrypt/live/jtgcsa.thetransformix.com/` — the admin vhost does not
+> get its own lineage.
+
+
+
 Hostnames are already set in both files — no editing needed.
 
 ```bash
