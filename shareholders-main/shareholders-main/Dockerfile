@@ -23,6 +23,12 @@ ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL \
     VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY \
     VITE_TAWANI_API_URL=$VITE_TAWANI_API_URL
 
+# pdf.js fetches these at runtime rather than bundling them: cMaps for encoded
+# text, and substitute data for standard-14 fonts a PDF references but does not
+# embed. Copying them into public/ makes Vite emit them into dist/, so they are
+# served as real files instead of being swallowed by the SPA fallback.
+RUN mkdir -p public/standard_fonts public/cmaps     && cp -r node_modules/pdfjs-dist/standard_fonts/. public/standard_fonts/     && cp -r node_modules/pdfjs-dist/cmaps/. public/cmaps/
+
 # `npm run build` is `tsc && vite build` — a type error fails the image, by design.
 RUN npm run build
 

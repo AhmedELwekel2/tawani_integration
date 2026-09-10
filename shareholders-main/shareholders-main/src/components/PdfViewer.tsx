@@ -19,6 +19,21 @@ import {
 // (deduped in package.json), so the API and worker versions always match.
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
+/**
+ * Resources pdf.js fetches lazily, copied out of pdfjs-dist at image build time.
+ *
+ * The generated reports embed Amiri but reference Helvetica without embedding it
+ * -- a standard-14 font every PDF reader is assumed to provide. pdf.js has no
+ * such library, so it fetches substitute font data from `standardFontDataUrl`.
+ * Left unset, that request goes to a path the SPA fallback answers with
+ * index.html, and pdf.js fails parsing HTML as a font.
+ */
+const PDF_OPTIONS = {
+  standardFontDataUrl: '/standard_fonts/',
+  cMapUrl: '/cmaps/',
+  cMapPacked: true,
+} as const;
+
 interface PdfViewerProps {
   fileUrl: string;
   fileName?: string | null;
@@ -124,6 +139,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({ fileUrl, fileName, onClose
       <div ref={containerRef} className="flex-1 overflow-auto p-4 flex justify-center" onClick={(e) => e.stopPropagation()}>
         <Document
           file={fileUrl}
+          options={PDF_OPTIONS}
           onLoadSuccess={handleLoadSuccess}
           onLoadError={() => setLoadError(true)}
           loading={
