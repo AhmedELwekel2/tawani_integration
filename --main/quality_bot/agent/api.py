@@ -23,6 +23,7 @@ the response:
 import asyncio
 import logging
 import os
+import shutil
 import time
 from datetime import datetime
 from typing import Any, Dict, Optional
@@ -173,7 +174,11 @@ def _file_response(state: dict, request: Request, download_name: str) -> JSONRes
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     fname = f"{os.path.splitext(download_name)[0]}_{stamp}.pdf"
     dest = os.path.join(GENERATED_DIR, fname)
-    os.replace(src, dest)
+    # shutil.move, not os.replace: the renderer writes to /tmp while generated/
+    # is a mounted volume in the container, and os.replace cannot cross a
+    # filesystem boundary (OSError 18, "Invalid cross-device link"). shutil
+    # falls back to copy-then-delete when the two are on different devices.
+    shutil.move(src, dest)
 
     download_url = str(request.base_url).rstrip("/") + f"/files/{fname}"
 
