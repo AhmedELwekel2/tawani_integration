@@ -6,11 +6,23 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
  * Kept as an explicit allow-list so a stolen admin JWT cannot be replayed from
  * an attacker-controlled page in the victim's browser.
  */
-const ALLOWED_ORIGINS = new Set([
+const DEFAULT_ALLOWED_ORIGINS = [
   'https://admin.jtgc.sa',
   'http://localhost:3001',
   'http://localhost:5173',
   'http://127.0.0.1:3001',
+];
+
+// The deployed admin panel's hostname is not knowable at author time -- it moved
+// once already -- so the ALLOWED_ORIGINS secret is merged in on top of the
+// defaults rather than replacing them. Adding a domain is then a secret change,
+// not a redeploy, and the local dev origins keep working either way.
+const ALLOWED_ORIGINS = new Set([
+  ...DEFAULT_ALLOWED_ORIGINS,
+  ...(Deno.env.get('ALLOWED_ORIGINS') ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean),
 ]);
 
 function corsHeadersFor(req: Request): Record<string, string> {

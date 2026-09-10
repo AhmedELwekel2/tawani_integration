@@ -56,10 +56,19 @@ nano --main/.env          # AWS_BEARER_TOKEN_BEDROCK, AWS_REGION,
 
 # Build-time + compose config
 cp .env.deploy.example .env
-nano .env                 # PORTAL_/ADMIN_SUPABASE_URL + ANON_KEY, TAWANI_ADMIN_KEY
+nano .env                 # PORTAL_/ADMIN_SUPABASE_URL + ANON_KEY
 ```
 
-Leave `ADMIN_TAWANI_KEY` empty — see the security note below.
+**Leave BOTH `TAWANI_ADMIN_KEY` and `ADMIN_TAWANI_KEY` empty.** They are two
+halves of the same handshake and must agree: `TAWANI_ADMIN_KEY` is what the agent
+demands, `ADMIN_TAWANI_KEY` is what gets compiled into the admin bundle to send.
+Setting only the first — which an earlier version of this guide told you to do —
+makes the agent reject every `POST /reports/*` with **401**, because the panel
+was built never to send the header.
+
+Since anything `VITE_*` ends up readable in the public bundle anyway, the key
+protects nothing that nginx is not already protecting. Empty on both sides is the
+working configuration; see the security note below.
 
 ### 3. Build and start
 
@@ -143,9 +152,13 @@ The real control is nginx, and the two vhosts differ deliberately:
 - **admin** — full `/tawani/` access, with a 900s read timeout because a report
   run takes 1–6 minutes.
 
-Set `TAWANI_ADMIN_KEY` on the agent anyway (defence in depth), and consider
-restricting the admin vhost by IP — there is a commented `allow`/`deny` block in
-`deploy/nginx/tawani-admin.conf`.
+Do **not** set `TAWANI_ADMIN_KEY` unless you also rebuild the admin image with
+`ADMIN_TAWANI_KEY` set to the same value — otherwise generation 401s. Since the
+key would be public either way, leaving both empty and relying on the vhost split
+is the honest configuration.
+
+Consider restricting the admin vhost by IP — there is a commented `allow`/`deny`
+block in `deploy/nginx/tawani-admin.conf`.
 
 The durable fix is for the agent to verify the caller's Supabase JWT
 (`portal_admin` / `role` claims) instead of a shared key. That is a contained
