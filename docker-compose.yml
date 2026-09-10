@@ -1,0 +1,80 @@
+# Tawani integration — three services behind the host's nginx.
+#
+# Nothing here publishes to 0.0.0.0. Every port binds to 127.0.0.1 so the only
+# way in is through nginx on the host, which owns TLS and routing. That matches
+# how the other apps on this VPS are already wired.
+#
+# Ports were chosen to avoid everything already listening on the box
+# (3000/3002/3010/3030/3040/3050, 8000/8001/8011/8080/8085/8090/8099, 9000/9005…).
+#
+# Copy .env.deploy.example to .env and fill it in before running.
+
+services:
+  agent:
+    build:
+      context: ./--main
+    image: tawani-agent
+    container_name: tawani-agent
+    restart: unless-stopped
+    # Secrets stay out of the image; they are read at runtime.
+    env_file:
+      - ./--main/.env
+    environment:
+      # Guards report generation and library mutation. Set it, and keep the
+      # matching value OUT of the admin panel's bundle — restrict the mutating
+      # routes in nginx instead. See deploy/nginx/.
+      TAWANI_ADMIN_KEY: ${TAWANI_ADMIN_KEY:-}
+      # Keep the SQLite file on the mounted volume. Without this the database
+      # would live inside the image layer and vanish on every redeploy.
+      TAWANI_DB_PATH: /app/data/tawani.db
+    volumes:
+      # The agent owns its report database and the PDFs it indexes. Both must
+      # outlive the container or every redeploy wipes the published library.
+      - agent-data:/app/quality_bot/generated
+      - agent-db:/app/data
+    ports:
+      - "127.0.0.1:8012:8010"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8010/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  portal:
+    build:
+      context: ./shareholders-main/shareholders-main
+      # Vite inlines these at build time — changing them needs a rebuild,
+      # not a restart.
+      args:
+        VITE_SUPABASE_URL: ${PORTAL_SUPABASE_URL}
+        VITE_SUPABASE_ANON_KEY: ${PORTAL_SUPABASE_ANON_KEY}
+        VITE_TAWANI_API_URL: /tawani
+    image: tawani-portal
+    container_name: tawani-portal
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3060:80"
+    depends_on:
+      - agent
+
+  admin:
+    build:
+      context: ./stackholders-admin-panel-main/stackholders-admin-panel-main
+      args:
+        VITE_SUPABASE_URL: ${ADMIN_SUPABASE_URL}
+        VITE_SUPABASE_ANON_KEY: ${ADMIN_SUPABASE_ANON_KEY}
+        VITE_TAWANI_API_URL: /tawani
+        # Deliberately blank by default — see the Dockerfile's warning.
+        VITE_TAWANI_ADMIN_KEY: ${ADMIN_TAWANI_KEY:-}
+    image: tawani-admin
+    container_name: tawani-admin
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3061:80"
+    depends_on:
+      - agent
+
+volumes:
+  agent-data:
+  agent-db:

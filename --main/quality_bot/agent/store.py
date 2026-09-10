@@ -16,9 +16,12 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-# Sits beside ``generated/`` so the database and the PDFs it points at move together.
+# Sits beside ``generated/`` so the database and the PDFs it points at move
+# together. TAWANI_DB_PATH overrides it, which is what the container does: the
+# file has to live on a mounted volume, and mounting one over ``quality_bot/``
+# itself would shadow the application code.
 _BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DB_PATH = os.path.join(_BASE_DIR, "tawani.db")
+DB_PATH = os.getenv("TAWANI_DB_PATH") or os.path.join(_BASE_DIR, "tawani.db")
 
 REPORT_TYPES = ("daily", "weekly", "monthly", "magazine")
 
@@ -47,6 +50,9 @@ def _connect() -> sqlite3.Connection:
 
 def init_db() -> None:
     """Create the schema. Idempotent; called once at API startup."""
+    parent = os.path.dirname(DB_PATH)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
     with _connect() as conn:
         conn.execute(
             """
