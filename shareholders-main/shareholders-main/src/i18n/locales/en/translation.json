@@ -27,7 +27,7 @@
     "getInTouch": "Get in touch",
     "feedback": "Feedback",
     "logout": "Logout",
-    "tourismReports": "Tourism Reports",
+    "tourismReports": "Tourism Bulletin",
     "tourismNews": "Tourism News"
   },
   "app": {
@@ -177,7 +177,9 @@
     "successTitle": "Message Sent!",
     "successDesc": "Thank you for reaching out. Our team will review your message and get back to you as soon as possible.",
     "sendAnother": "Send Another Message",
-    "errorFallback": "Something went wrong. Please try again."
+    "errorFallback": "Something went wrong. Please try again.",
+    "supportLabel": "Ethraa Tourism customer service",
+    "supportPhone": "0536068166"
   },
   "feedback": {
     "title": "Your Feedback",
@@ -290,7 +292,7 @@
     "tawaniError": "Reports are temporarily unavailable. Please try again shortly."
   },
   "tourismReports": {
-    "title": "Tourism Reports",
+    "title": "Tourism Bulletin",
     "subtitle": "Sector reports published by the cooperative",
     "loading": "Loading reports…",
     "empty": "No reports have been published yet.",

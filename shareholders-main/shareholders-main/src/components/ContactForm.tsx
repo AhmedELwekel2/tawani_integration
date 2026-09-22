@@ -1,7 +1,7 @@
 import React, { useState, useEffect, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Mail, Send, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Mail, Send, CheckCircle2, AlertCircle, Phone } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './ui/card';
 import { submitContactForm } from '../services/contactService';
@@ -123,6 +123,21 @@ const ContactFormComponent: React.FC = () => {
         <CardDescription className="text-base">
           {t('contact.desc')}
         </CardDescription>
+
+        {/* Direct line, for anyone who would rather call than wait on a form.
+            `dir="ltr"` on the number itself: an RTL paragraph would otherwise
+            reorder the digit groups of a phone number. */}
+        <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-primary/15 bg-primary/5 px-4 py-3">
+          <Phone className="w-4 h-4 text-primary flex-shrink-0" />
+          <span className="text-sm text-slate-600">{t('contact.supportLabel')}</span>
+          <a
+            href={`tel:${t('contact.supportPhone')}`}
+            dir="ltr"
+            className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+          >
+            {t('contact.supportPhone')}
+          </a>
+        </div>
       </CardHeader>
 
       <CardContent className="px-0">

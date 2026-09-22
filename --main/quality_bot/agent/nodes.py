@@ -18,7 +18,7 @@ import logging
 import re
 from datetime import datetime
 
-from . import llm, prompts
+from . import llm, prompts, store
 from . import _legacy as L
 from .state import ReportState
 
@@ -64,11 +64,31 @@ def _strip_seo_preamble(text: str) -> str:
 
 
 # --------------------------------------------------------------------------- #
-# Fetch  (Twitter/X + RSS + gov/international sites)
+# Fetch  (from the stored corpus; the scheduler owns the scraping)
 # --------------------------------------------------------------------------- #
 async def _fetch_family_sources():
-    raw = await asyncio.to_thread(L.fetch_tourism_news)
-    return raw or []
+    """Read the corpus the scheduled refresh maintains.
+
+    This used to call ``fetch_tourism_news()`` directly, so every report run --
+    which nobody caches, and which an admin may trigger several times an hour --
+    paid for a full scrape of 7 web sources plus 3 metered X API calls. Reading
+    the store makes report generation free of external calls entirely.
+
+    The live fetch survives only as a cold-start fallback: a brand-new database
+    with no scheduled refresh behind it yet should still be able to produce a
+    report rather than fail.
+    """
+    raw = await asyncio.to_thread(store.list_articles, 1000)
+    if raw:
+        return raw
+
+    logger.warning("corpus is empty — falling back to a live fetch for this run")
+    raw = await asyncio.to_thread(L.fetch_tourism_news) or []
+    if raw:
+        # Seed the store so the next run, and the news endpoints, have material.
+        await asyncio.to_thread(store.upsert_articles, raw)
+        store.record_refresh(len(raw))
+    return raw
 
 
 async def fetch_daily(state: ReportState) -> ReportState:

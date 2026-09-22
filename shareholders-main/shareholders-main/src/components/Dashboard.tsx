@@ -32,11 +32,11 @@ const TourismNews = lazy(() => import('./TourismNews'));
 type View = 'overview' | 'info' | 'transactions' | 'dividends' | 'certificate' | 'announcements' | 'reports' | 'news' | 'contact' | 'feedback';
 
 /**
- * What a subscriber may see: published content and their own notes, and nothing
+ * What a subscriber may see: published content and a way to reach the cooperative, and nothing
  * touching a shareholding they do not have. Everything else in `View` is
  * shareholder-only.
  */
-const SUBSCRIBER_VIEWS: View[] = ['announcements', 'news', 'reports', 'feedback', 'contact'];
+const SUBSCRIBER_VIEWS: View[] = ['announcements', 'news', 'reports', 'contact'];
 
 export const Dashboard: React.FC = () => {
   const { t } = useTranslation();

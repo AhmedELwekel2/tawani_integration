@@ -1,19 +1,24 @@
-"""Local report store for the Tourism agent.
+"""Local store for the Tourism agent: generated reports, and the news corpus.
 
-The agent owns its own reports end to end: the SQLite file here is the record,
-and the PDF itself stays on disk under ``generated/``. Nothing about a report
-lives in a consumer's database -- the admin panel and the stockholder portal
-read this through the HTTP API and keep their own Supabase data separate.
+The agent owns both end to end. The SQLite file here is the record, and report
+PDFs stay on disk under ``generated/``. Nothing lives in a consumer's database --
+the admin panel and the stockholder portal read this through the HTTP API and
+keep their own Supabase data separate.
 
-SQLite is deliberate: this is a single-process FastAPI app with a handful of
-rows per week, so a file next to the PDFs it indexes beats standing up a second
-service. Every call opens its own short-lived connection, which keeps the store
-safe to touch from the thread pool without a shared-connection lock.
+The ``articles`` table is what stops scraping on the request path. A scheduled
+job (see ``corpus.py``) is the only thing that fetches; every reader -- the news
+endpoints and the report pipeline alike -- serves from here.
+
+SQLite is deliberate: a single-process FastAPI app with a few thousand rows beats
+standing up a second service. Every call opens its own short-lived connection,
+which keeps the store safe to touch from the thread pool without a shared
+connection lock.
 """
+import json
 import os
 import sqlite3
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 # Sits beside ``generated/`` so the database and the PDFs it points at move
@@ -77,6 +82,45 @@ def init_db() -> None:
             "CREATE INDEX IF NOT EXISTS reports_published_idx "
             "ON reports (is_published, published_at DESC)"
         )
+
+        # --- news corpus -------------------------------------------------- #
+        # Keyed on url, a natural key that dedups across refreshes. The legacy
+        # `clean_deduplicate_articles` dedups by title within a single fetch and
+        # cannot recognise an article it already saw yesterday.
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS articles (
+                url          TEXT PRIMARY KEY,
+                title        TEXT,
+                description  TEXT,
+                source_name  TEXT,
+                published_at TEXT,
+                image_url    TEXT,
+                -- The whole article dict. The report pipeline's enhancers read
+                -- keys beyond the six columns above, so storing only the
+                -- normalised fields would quietly degrade generation.
+                raw          TEXT NOT NULL,
+                first_seen   TEXT NOT NULL,
+                last_seen    TEXT NOT NULL
+            )
+            """
+        )
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS articles_seen_idx ON articles (last_seen DESC)"
+        )
+
+        # Single-row table: when the corpus was last refreshed, and how it went.
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS corpus_meta (
+                id              INTEGER PRIMARY KEY CHECK (id = 1),
+                last_refresh_at TEXT,
+                article_count   INTEGER,
+                last_error      TEXT
+            )
+            """
+        )
+        conn.execute("INSERT OR IGNORE INTO corpus_meta (id) VALUES (1)")
 
 
 def _row_to_dict(row: sqlite3.Row) -> Dict[str, Any]:
@@ -204,3 +248,137 @@ def delete_report(report_id: str, generated_dir: str) -> bool:
             pass
 
     return True
+
+
+# --------------------------------------------------------------------------- #
+# News corpus
+# --------------------------------------------------------------------------- #
+def _source_name(article: Dict[str, Any]) -> str:
+    """Sources arrive as either a dict (``{'name': ...}``) or a bare string."""
+    src = article.get("source")
+    if isinstance(src, dict):
+        return str(src.get("name") or "")
+    return str(src or "")
+
+
+def upsert_articles(articles: List[Dict[str, Any]]) -> int:
+    """Store a batch of fetched articles. Returns how many rows were written.
+
+    An article already present keeps its ``first_seen`` and has the rest
+    refreshed -- a source that edits a headline should not create a duplicate,
+    and an article seen again should not look newly discovered.
+    """
+    now = _now()
+    rows = []
+    for article in articles or []:
+        if not article:
+            continue
+        url = (article.get("url") or "").strip()
+        if not url:
+            # Without a URL there is no stable identity, so it cannot be deduped
+            # across refreshes and is not worth storing.
+            continue
+        rows.append((
+            url,
+            article.get("title"),
+            article.get("description"),
+            _source_name(article),
+            article.get("publishedAt") or article.get("published_at"),
+            article.get("urlToImage") or article.get("image_url") or article.get("image"),
+            json.dumps(article, ensure_ascii=False, default=str),
+            now,
+            now,
+        ))
+
+    if not rows:
+        return 0
+
+    with _connect() as conn:
+        conn.executemany(
+            """
+            INSERT INTO articles (
+                url, title, description, source_name, published_at,
+                image_url, raw, first_seen, last_seen
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(url) DO UPDATE SET
+                title        = excluded.title,
+                description  = excluded.description,
+                source_name  = excluded.source_name,
+                published_at = excluded.published_at,
+                image_url    = excluded.image_url,
+                raw          = excluded.raw,
+                last_seen    = excluded.last_seen
+            """,
+            rows,
+        )
+    return len(rows)
+
+
+def list_articles(limit: int = 500) -> List[Dict[str, Any]]:
+    """The corpus, newest first, as the article dicts the pipeline expects.
+
+    Returns ``raw`` decoded rather than the flat columns, so callers get every
+    key the fetchers produced.
+    """
+    with _connect() as conn:
+        rows = conn.execute(
+            "SELECT raw FROM articles ORDER BY COALESCE(published_at, last_seen) DESC LIMIT ?",
+            (limit,),
+        ).fetchall()
+
+    articles = []
+    for row in rows:
+        try:
+            articles.append(json.loads(row["raw"]))
+        except (ValueError, TypeError):
+            # A corrupt row should cost one article, not the whole corpus.
+            continue
+    return articles
+
+
+def prune_articles(max_age_days: int = 60) -> int:
+    """Drop articles not seen for a while. Returns how many were removed.
+
+    Keyed on ``last_seen`` rather than ``published_at``: many sources omit a
+    date, and an undated article that stopped appearing is the one to forget.
+    The window is generous because monthly reports read back over weeks.
+    """
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=max_age_days)).isoformat()
+    with _connect() as conn:
+        cursor = conn.execute("DELETE FROM articles WHERE last_seen < ?", (cutoff,))
+        return cursor.rowcount or 0
+
+
+def record_refresh(article_count: int, error: Optional[str] = None) -> None:
+    with _connect() as conn:
+        conn.execute(
+            "UPDATE corpus_meta SET last_refresh_at = ?, article_count = ?, last_error = ? "
+            "WHERE id = 1",
+            (_now(), article_count, error),
+        )
+
+
+def corpus_status() -> Dict[str, Any]:
+    """Freshness of the corpus, for /health and /corpus/status."""
+    with _connect() as conn:
+        row = conn.execute(
+            "SELECT last_refresh_at, article_count, last_error FROM corpus_meta WHERE id = 1"
+        ).fetchone()
+        stored = conn.execute("SELECT COUNT(*) AS n FROM articles").fetchone()["n"]
+
+    last = row["last_refresh_at"] if row else None
+    age_minutes = None
+    if last:
+        try:
+            age = datetime.now(timezone.utc) - datetime.fromisoformat(last)
+            age_minutes = round(age.total_seconds() / 60, 1)
+        except ValueError:
+            pass
+
+    return {
+        "last_refresh_at": last,
+        "age_minutes": age_minutes,
+        "article_count": stored,
+        "last_refresh_count": row["article_count"] if row else None,
+        "last_error": row["last_error"] if row else None,
+    }

@@ -34,7 +34,10 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from starlette.background import BackgroundTask
 
+from contextlib import asynccontextmanager
+
 from . import _legacy as L
+from . import corpus
 from . import store
 from .graphs import daily_graph, magazine_graph, periodic_graph
 
@@ -48,10 +51,29 @@ logger = logging.getLogger(__name__)
 GENERATED_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "generated")
 os.makedirs(GENERATED_DIR, exist_ok=True)
 
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    """Own the background refresh task for the life of the process.
+
+    Started here rather than at import so it binds to the running event loop,
+    and cancelled on shutdown so a reload does not leave an orphan scraping.
+    """
+    task = asyncio.create_task(corpus.refresh_loop())
+    try:
+        yield
+    finally:
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
+
+
 app = FastAPI(
     title="Tourism News Agent API",
     description="Test harness for the LangGraph-powered Tourism report agent.",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 # Allow browser-based frontends (any origin) to call the API during development.
@@ -219,11 +241,33 @@ def _respond(state: dict, fmt: str, request: Request, download_name: str):
 @app.get("/health")
 async def health():
     from . import config
+    status = store.corpus_status()
     return {
         "status": "ok",
         "llm": {"bedrock": config.HAS_BEDROCK, "azure": config.HAS_AZURE},
         "model": config.BEDROCK_MODEL_ID,
+        # Surfaced here so staleness is visible without a second call.
+        "corpus": {
+            "article_count": status["article_count"],
+            "age_minutes": status["age_minutes"],
+            "refresh_hours": corpus.REFRESH_HOURS,
+        },
     }
+
+
+@app.get("/corpus/status", summary="Freshness of the stored news corpus")
+async def corpus_status():
+    return {**store.corpus_status(), "refresh_hours": corpus.REFRESH_HOURS}
+
+
+@app.post("/corpus/refresh", summary="Force a corpus refresh now")
+async def corpus_refresh(_: None = Depends(require_admin)):
+    """Scrape every source immediately, outside the schedule.
+
+    Guarded: a refresh is the expensive operation the schedule exists to ration,
+    so it must not be triggerable from the portal.
+    """
+    return await corpus.refresh_corpus()
 
 
 # --------------------------------------------------------------------------- #
@@ -272,7 +316,9 @@ async def _news_cached(period: str, days: int, category: Optional[str], limit: i
 
 
 async def _news_listing(period: str, days: int, category: Optional[str], limit: int) -> dict:
-    articles = await asyncio.to_thread(L.fetch_tourism_news) or []
+    # Reads the stored corpus; never scrapes. The scheduled job in corpus.py is
+    # the only fetcher, so a burst of readers costs nothing beyond this query.
+    articles = await asyncio.to_thread(store.list_articles, 1000) or []
 
     recent = await asyncio.to_thread(lambda: L.filter_recent_articles(articles, days=days) or [])
     if not recent:
