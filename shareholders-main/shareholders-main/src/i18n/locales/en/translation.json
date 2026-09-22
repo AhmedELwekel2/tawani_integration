@@ -44,7 +44,8 @@
     "noDataDesc": "We couldn't retrieve your stockholder information.",
     "tryAgain": "Try Again",
     "errorBanner": "Error",
-    "retry": "Retry"
+    "retry": "Retry",
+    "subtitleSubscriber": "Manage your membership and review recent activity."
   },
   "login": {
     "subtitle": "Enter your National ID to access your account",

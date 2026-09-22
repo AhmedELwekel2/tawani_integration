@@ -253,7 +253,11 @@ export const Dashboard: React.FC = () => {
               <h1 className="text-4xl font-semibold text-slate-800 tracking-tight flex items-center drop-shadow-sm">
                 {navItems.find(n => n.id === currentView)?.label}
               </h1>
-              <p className="text-slate-500 mt-2 text-lg">{t('dashboard.subtitle')}</p>
+              {/* A subscriber holds an إثراء السياحة membership, not shares, so
+                  "manage your shares" is simply wrong for them. */}
+              <p className="text-slate-500 mt-2 text-lg">
+                {t(isSubscriber ? 'dashboard.subtitleSubscriber' : 'dashboard.subtitle')}
+              </p>
             </motion.div>
           </header>
 
